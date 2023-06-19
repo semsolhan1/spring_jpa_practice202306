@@ -16,35 +16,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/posts")
 public class PostApiController {
 
-    // 리소스: 게시물 (Post)
-    /*
-        게시물 목록 조회: /posts            - GET
-        게시물 개별 조회: /posts/{id}       - GET
-        게시물 등록:     /posts            - POST
-        게시물 수정:     /posts/{id}       - PATCH
-        게시물 삭제:     /posts/{id}       - DELETE
-     */
+  // 리소스: 게시물 (Post)
+/*
+게시물 목록 조회: /posts       - GET
+게시물 개별 조회: /posts/{id}  - GET
+게시물 등록:     /posts       - POST
+게시물 수정:     /posts/{id}  - PATCH
+게시물 삭제:     /posts/{id}  - DELETE
+*/
 
-    private final PostService postService;
 
-    @GetMapping
-    public ResponseEntity<?> list(PageDTO pageDTO) {
-        log.info("/api/v1/posts?page={}&size={}", pageDTO.getPage(), pageDTO.getSize());
+  //@Autowired 역할을 한다.
+  private final PostService postService;//@RequiredArgsConstructor때문에 간다.
 
-        PostListResponseDTO dto = postService.getPosts(pageDTO);
+  @GetMapping
+  public ResponseEntity<?> list(PageDTO pageDTO) {
+    log.info("/api/v1/posts?page={}&size{}", pageDTO.getPage(), pageDTO.getSize());
 
-        return ResponseEntity
-                .ok()
-                .body(dto);
-    }
+    PostListResponseDTO dto = postService.getPosts(pageDTO);
 
+    return ResponseEntity
+            .ok()
+            .body(dto);
+  }
 
 }
-
-
-
-
-
-
-
-

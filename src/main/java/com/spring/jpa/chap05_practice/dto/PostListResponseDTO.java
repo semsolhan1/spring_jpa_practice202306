@@ -10,17 +10,9 @@ import java.util.List;
 @Builder
 public class PostListResponseDTO {
 
-    private int count; //총 게시물 수
-    private PageResponseDTO pageInfo; //페이지 렌더링 정보
-    private List<PostDetailResponseDTO> posts; //게시물 렌더링 정보
+  private int count; //총 게시물 수
+  private PageResponseDTO pageInfo; //페이지 렌더링 정보/
+  private List<PostDetailResponseDTO> posts; //게시물 랜더링 정보
+
 
 }
-
-
-
-
-
-
-
-
-

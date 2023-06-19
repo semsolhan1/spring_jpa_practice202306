@@ -7,165 +7,155 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
+
+import javax.transaction.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 @Rollback(false)
 class StudentRepositoryTest {
 
-    @Autowired
-    StudentRepository studentRepository;
+  @Autowired
+  StudentRepository studentRepository;
 
-    @BeforeEach
-    void insertData() {
-        Student s1 = Student.builder()
-                .name("춘식이")
-                .city("서울시")
-                .major("수학과")
-                .build();
-        Student s2 = Student.builder()
-                .name("언년이")
-                .city("부산시")
-                .major("수학교육과")
-                .build();
-        Student s3 = Student.builder()
-                .name("대길이")
-                .city("한양도성")
-                .major("체육과")
-                .build();
+  @BeforeEach
+  void insertData(){
+    Student s1 = Student.builder()
+            .name("춘식이")
+            .city("서울시")
+            .major("수학과")
+            .build();
+    Student s2 = Student.builder()
+            .name("언년이")
+            .city("부산시")
+            .major("수학교육과")
+            .build();
+    Student s3 = Student.builder()
+            .name("대길이")
+            .city("한양도성")
+            .major("체육과")
+            .build();
 
-        studentRepository.save(s1);
-        studentRepository.save(s2);
-        studentRepository.save(s3);
-    }
+    studentRepository.save(s1);
+    studentRepository.save(s2);
+    studentRepository.save(s3);
 
-    @Test
-    @DisplayName("이름이 춘식이인 학생의 정보를 조회해야 한다.")
-    void testFindByName() {
-        //given
-        String name = "춘식이";
-        //when
-        List<Student> students = studentRepository.findByName(name);
+  }
+  @Test
+  @DisplayName("이름이 춘식이인 학생의 정보를 조회해야 한다.")
+  void testFindByName() {
+    //given
+    String  name = "춘식이";
+    //when
+    List<Student> students = studentRepository.findByName(name);
 
-        //then
-        assertEquals(1, students.size());
+    //then
+    assertEquals(1, students.size());
 
-        System.out.println("students.get(0) = " + students.get(0));
-    }
+    System.out.println("students.get(0) = " + students.get(0));
+  }
+  @Test
+  @DisplayName("이름이 춘식이인 학생의 정보를 조회해야 한다.")
+  void testFindByCityAndMajor() {
+    //given
+    String city = "부산시";
+    String major = "수학교육과";
+    //when
+    List<Student> students = studentRepository.findByCityAndMajor(city, major);
 
-    @Test
-    @DisplayName("testFindByCityAndMajor")
-    void testFindByCityAndMajor() {
-        //given
-        String city = "부산시";
-        String major = "수학교육과";
-        //when
-        List<Student> students = studentRepository.findByCityAndMajor(city, major);
+    //then
+    assertEquals(1, students.size());
+    assertEquals("언년이", students.get(0).getName());
 
-        //then
-        assertEquals(1, students.size());
-        assertEquals("언년이", students.get(0).getName());
+    System.out.println("students.get(0) = " + students.get(0));
+  }
 
-        System.out.println("students.get(0) = " + students.get(0));
-    }
+  @Test
+  @DisplayName("testFindByMajorContaining")
+  void testFindByMajorContaining() {
+    //given
 
-    @Test
-    @DisplayName("testFindByMajorContaining")
-    void testFindByMajorContaining() {
-        //given
-        String major = "수학";
-        //when
-        List<Student> students = studentRepository.findByMajorContaining(major);
+    String major = "수학";
+    //when
+    List<Student> students = studentRepository.findByMajorContaining(major);
 
-        //then
-        assertEquals(2, students.size());
+    //then
+    assertEquals(2, students.size());
 
-        System.out.println("\n\n\n");
-        students.forEach(System.out::println);
-        System.out.println("\n\n\n");
+    System.out.println("\n\n\n");
+    students.forEach(System.out::println);
+    System.out.println("\n\n\n");
 
-    }
+  }
 
-    @Test
-    @DisplayName("testNativeSQL")
-    void testNativeSQL() {
-        //given
-        String name = "대길이";
-        //when
-        Student student = studentRepository.findNameWithSQL(name);
+  @Test
+  @DisplayName("testNativeSQL")
+  void testNativeSQL() {
+    //given
 
-        //then
-        assertEquals("한양도성", student.getCity());
+    String name = "대길이";
+    //when
+    Student students = studentRepository.findNameWithSQL(name);
 
-        System.out.println("\n\n\n");
-        System.out.println("student = " + student);
-        System.out.println("\n\n\n");
+    //then
+    assertEquals("한양도성", students.getCity());
 
-    }
+    System.out.println("\n\n\n");
+    System.out.println("students = " + students);
+    System.out.println("\n\n\n");
 
-    @Test
-    @DisplayName("testFindCityWithJPQL")
-    void testFindCityWithJPQL() {
-        //given
-        String city = "서울시";
-        //when
-        List<Student> students = studentRepository.getByCityWithJPQL(city);
+  }
 
-        //then
-        assertEquals("춘식이", students.get(0).getName());
+  @Test
+  @DisplayName("testFindCityWithJPQL")
+  void testFindCityWithJPQL() {
+    //given
 
-        System.out.println("\n\n\n");
-        System.out.println("student = " + students.get(0));
-        System.out.println("\n\n\n");
+    String city = "서울시";
+    //when
+    List<Student> students = studentRepository.getByCityWithJPQL(city);
 
-    }
+    //then
+    assertEquals("춘식이", students.get(0).getName());
 
-    @Test
-    @DisplayName("testSearchNameJPQL")
-    void testSearchNameJPQL() {
-        //given
-        String name = "이";
-        //when
-        List<Student> students = studentRepository.searchByNamesWithJPQL(name);
+    System.out.println("\n\n\n");
+    System.out.println("students = " + students.get(0));
+    System.out.println("\n\n\n");
 
-        //then
-        assertEquals(3, students.size());
+  }
 
-        System.out.println("\n\n\n");
-        students.forEach(System.out::println);
-        System.out.println("\n\n\n");
-    }
+  @Test
+  @DisplayName("testSearchNameJPQL")
+  void testSearchNameJPQL() {
+    //given
 
-    @Test
-    @DisplayName("JPQL로 삭제하기")
-    void testDeleteWithJPQL() {
-        //given
-        String name = "대길이";
-        //when
-        studentRepository.deleteByNameWithJPQL(name);
+    String name = "이";
+    //when
+    List<Student> students = studentRepository.searchByNameWithJPQL(name);
 
-        //then
-        List<Student> students = studentRepository.findByName(name);
+    //then
+    assertEquals(3, students.size());
 
-        assertEquals(0, students.size());
-    }
+    System.out.println("\n\n\n");
+    students.forEach(System.out::println);
+    System.out.println("\n\n\n");
 
+  }
 
+  @Test
+  @DisplayName("JPQL로 삭제하기")
+  void testDeleteWithJPQL() {
+      //given
+      String name = "대길이";
+      //when
+      studentRepository.deleteByNameWithJPQL(name);
+      //then
+      List<Student> students = studentRepository.findByName(name);
 
+      assertEquals(0, students.size());
+  }
 }
-
-
-
-
-
-
-
-
-
-
-

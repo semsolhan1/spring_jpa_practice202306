@@ -11,8 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @SpringBootTest
@@ -20,104 +20,94 @@ import java.util.List;
 //기능을 보장받기 위해 웬만하면 트랜잭션 기능을 함께 사용해야 합니다.
 //나중에 MVC 구조에서 Service 클래스에 아노테이션을 첨부하면 됩니다.
 @Transactional
-@Rollback(false)
+@Rollback(false)//실제로 서비스 되는 곳에서는 true를 써준다.
 class StudentPageRepositoryTest {
 
-    @Autowired
-    StudentPageRepository studentPageRepository;
-
-    @BeforeEach
-    void bulkInsert() {
+  @Autowired
+  StudentPageRepository studentPageRepository;
+  @BeforeEach
+  void bulkInsert() {
         //학생을 147명 저장
-        for(int i=1; i<=147; i++) {
-            Student s = Student.builder()
-                    .name("김테스트" + i)
-                    .city("도시시" + i)
-                    .major("전공공" + i)
-                    .build();
-            studentPageRepository.save(s);
+        for(int i=1; i<147; i++) {
+          Student s = Student.builder()
+                  .name("김테스트" + i)
+                  .city("도시시" + i)
+                  .major("전공공" + i)
+                  .build();
+          studentPageRepository.save(s);
         }
-    }
 
-    @Test
-    @DisplayName("기본 페이징 테스트")
-    void testBasicPagination() {
-        //given
-        int pageNo = 3;
-        int amount = 10;
-
-        //페이지 정보 생성
-        //페이지 번호가 zero-based
-        Pageable pageInfo
-                = PageRequest.of(pageNo - 1
-                , amount
-//              , Sort.by("name").descending() //정렬기준 필드명!
-                , Sort.by(
-                        Sort.Order.desc("name"),
-                        Sort.Order.asc("city")
-                )
-        );
-
-        //when
-        Page<Student> students
-                = studentPageRepository.findAll(pageInfo);
-
-        //페이징이 완료된 데이터셋
-        List<Student> studentList = students.getContent();
-
-        //총 페이지 수
-        int totalPages = students.getTotalPages();
-        //총 학생 수
-        long totalElements = students.getTotalElements();
-        boolean next = students.hasNext();
-        boolean prev = students.hasPrevious();
+  }
 
 
-        //then
-        System.out.println("\n\n\n");
-        System.out.println("totalPages = " + totalPages);
-        System.out.println("totalElements = " + totalElements);
-        System.out.println("prev = " + prev);
-        System.out.println("next = " + next);
-        studentList.forEach(System.out::println);
-        System.out.println("\n\n\n");
-    }
-    
-    @Test
-    @DisplayName("이름검색 + 페이징")
-    void testSearchAndPagination() {
-        //given
-        int pageNo = 1;
-        int size = 10;
-        Pageable pageInfo = PageRequest.of(pageNo - 1, size);
+        @Test
+        @DisplayName("기본 페이징 테스트")
+        void testBasicPagination() {
+            //given
+            int pageNo = 3;
+            int amount = 10;
 
-        //when
-        Page<Student> students
-                = studentPageRepository.findByNameContaining("3", pageInfo);
+            //페이지 정보 생성
+            //페이지 번호가 zeto-based
+            //PageRequest pageInfo = PageRequest.of(pageNo - 1, amount);
+            //PageRequest를 Pageable로 바꿔줘도 된다. Pageable이 부모여서
+            Pageable pageInfo = PageRequest.of(pageNo - 1
+                    , amount
+                    //, Sort.by("name").descending() //정렬기준 필드명!
+                    , Sort.by(
+                            Sort.Order.desc("name"),
+                            Sort.Order.asc("city")
+                    )
+            );
+            //when
+          Page<Student> students
+                  = studentPageRepository.findAll(pageInfo);
 
-        int totalPages = students.getTotalPages();
-        long totalElements = students.getTotalElements();
+          //페이징 완료된 데이터셋
+          List<Student> studentList = students.getContent();
 
-        //then
-        System.out.println("\n\n\n");
-        System.out.println("totalElements = " + totalElements);
-        System.out.println("totalPages = " + totalPages);
-        students.getContent().forEach(System.out::println);
-        System.out.println("\n\n\n");
-    }
-    
+          //총 페이지 수
+          int totalPages = students.getTotalPages();
+          //총 학생 수
+          long totalElements = students.getTotalElements();
+          //다음버튼의 여부
+          boolean next = students.hasNext();
+          //이전버튼의 여부
+          boolean prev = students.hasPrevious();
+
+
+          //then
+
+          System.out.println("\n\n\n");
+          System.out.println("totalPages = " + totalPages);
+          System.out.println("totalElements = " + totalElements);
+          System.out.println("prev = " + prev);
+          System.out.println("next = " + next);
+          studentList.forEach(System.out::println);
+          System.out.println("\n\n\n");
+        }
+
+        @Test
+        @DisplayName("이름검색 + 페이징")
+        void testSearchAndPagination() {
+            //given
+            int pageNo = 1;
+            int size = 10;
+          PageRequest pageInfo = PageRequest.of(pageNo - 1, size);
+          //when
+          Page<Student> students
+                  = studentPageRepository.findByNameContaining("3", pageInfo);
+
+          int totalPages = students.getTotalPages();
+          long totalElements = students.getTotalElements();
+          //then
+          System.out.println("\n\n\n");
+          System.out.println("totalElements = " + totalElements);
+          System.out.println("totalPages = " + totalPages);
+          students.getContent().forEach (System.out:: println);
+          System.out.println("\n\n\n");
+
+        }
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
